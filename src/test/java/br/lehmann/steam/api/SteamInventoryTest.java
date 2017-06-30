@@ -11,6 +11,7 @@ public class SteamInventoryTest {
 	public void retriveInventory() throws Exception {
 		SteamInventory client = new SteamInventory();
 		Inventory inventory = client.retriveInventory("76561198009543117");
+//		Inventory inventory = client.retriveInventory("76561197996361721");
 		Multimap<String, AssetDescription> games = MultimapBuilder.hashKeys().arrayListValues().build();
 		for (AssetDescription asset : inventory.descriptions) {
 			games.put(asset.market_hash_name.substring(0, asset.market_hash_name.indexOf('-')), asset);
