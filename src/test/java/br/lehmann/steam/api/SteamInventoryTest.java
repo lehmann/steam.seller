@@ -1,14 +1,9 @@
 package br.lehmann.steam.api;
 
-import static org.junit.Assert.*;
-
-import java.util.stream.Collectors;
-
-import org.influxdb.InfluxDBFactory;
-import org.influxdb.impl.InfluxDBImpl;
 import org.junit.Test;
 
-import com.google.common.base.Functions;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 
 public class SteamInventoryTest {
 
@@ -16,6 +11,13 @@ public class SteamInventoryTest {
 	public void retriveInventory() throws Exception {
 		SteamInventory client = new SteamInventory();
 		Inventory inventory = client.retriveInventory("76561198009543117");
+		Multimap<String, AssetDescription> games = MultimapBuilder.hashKeys().arrayListValues().build();
+		for (AssetDescription asset : inventory.descriptions) {
+			games.put(asset.market_hash_name.substring(0, asset.market_hash_name.indexOf('-')), asset);
+		}
+		for (String game : games.keySet()) {
+			System.out.println(game);
+		}
 		System.out.println("total_inventory_count: " + inventory.total_inventory_count);
 		System.out.println("inventory.descriptions.size: " + inventory.descriptions.size());
 		System.out.println("inventory.assets.size: " + inventory.assets.size());
