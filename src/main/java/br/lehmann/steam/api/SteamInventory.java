@@ -19,12 +19,33 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import br.lehmann.steam.api.badge.BadgePojo;
+import br.lehmann.steam.api.games.OwnedGames;
 
 public class SteamInventory {
 
 	private static final Pattern MARKET_PAGE = Pattern.compile("Market_LoadOrderSpread\\( (\\d+) \\)");
 	private static final Pattern PRICE_HISTORY = Pattern.compile("var line1=(.+);");
 	private final Map<String, String> marketHashName_to_nameids = new HashMap<>();
+
+	public OwnedGames retriveGames(String userId) {
+		AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
+		Response r;
+		try {
+			Future<Response> f = asyncHttpClient.prepareGet("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=CB4C6D295AF53ECFF3477BCA5DD3E52F&format=json&steamid=" + userId)
+					.execute();
+			r = f.get();
+		} catch (InterruptedException | ExecutionException e) {
+			return null;
+		} finally {
+			try {
+				asyncHttpClient.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String json = r.getResponseBody();
+		return new Gson().fromJson(json, OwnedGames.class);
+	}
 
 	public BadgePojo retriveBadges(String userId) {
 		AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
